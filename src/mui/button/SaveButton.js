@@ -6,20 +6,23 @@ import ContentSave from 'material-ui/svg-icons/content/save';
 import CircularProgress from 'material-ui/CircularProgress';
 import translate from '../../i18n/translate';
 
-class SaveButton extends Component {
+export class SaveButton extends Component {
 
     handleClick = (e) => {
         if (this.props.saving) {
             // prevent double submission
             e.preventDefault();
+        } else if (!this.props.submitOnEnter && this.props.handleSubmit) {
+            this.props.handleSubmit();
         }
     }
 
     render() {
-        const { saving, label = 'aor.action.save', raised = true, translate } = this.props;
+        const { saving, label = 'aor.action.save', raised = true, translate, submitOnEnter } = this.props;
+        const type = submitOnEnter ? 'submit' : 'button';
         return raised
             ? <RaisedButton
-                type="submit"
+                type={type}
                 label={label && translate(label)}
                 icon={saving ? <CircularProgress size={25} thickness={2} /> : <ContentSave />}
                 onClick={this.handleClick}
@@ -30,7 +33,7 @@ class SaveButton extends Component {
                 }}
             />
             : <FlatButton
-                type="submit"
+                type={type}
                 label={label && translate(label)}
                 icon={saving ? <CircularProgress size={25} thickness={2} /> : <ContentSave />}
                 onClick={this.handleClick}
@@ -49,6 +52,12 @@ SaveButton.propTypes = {
     raised: PropTypes.bool,
     saving: PropTypes.bool,
     translate: PropTypes.func.isRequired,
+    submitOnEnter: PropTypes.bool,
+    handleSubmit: PropTypes.func,
+};
+
+SaveButton.defaultProps = {
+    submitOnEnter: true,
 };
 
 const mapStateToProps = state => ({

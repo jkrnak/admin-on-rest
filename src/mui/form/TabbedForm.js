@@ -38,9 +38,11 @@ export class TabbedForm extends Component {
     };
 
     render() {
-        const { children, contentContainerStyle, handleSubmit, invalid, record, resource, basePath, translate } = this.props;
+        const { children, contentContainerStyle, handleSubmit, invalid, record, resource, basePath, translate, submitOnEnter } = this.props;
+        const formOnSubmit = submitOnEnter ? handleSubmit : function noop() {};
+        const toolbarProps = submitOnEnter ? {} : { submitOnEnter: submitOnEnter, handleSubmit: handleSubmit };
         return (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={formOnSubmit}>
                 <div style={{ padding: '0 1em 1em 1em' }}>
                     <Tabs value={this.state.value} onChange={this.handleChange} contentContainerStyle={contentContainerStyle}>
                         {React.Children.map(children, (tab, index) =>
@@ -50,7 +52,7 @@ export class TabbedForm extends Component {
                         )}
                     </Tabs>
                 </div>
-                <Toolbar invalid={invalid} />
+                <Toolbar invalid={invalid} {...toolbarProps} />
             </form>
         );
     }
@@ -70,10 +72,12 @@ TabbedForm.propTypes = {
     basePath: PropTypes.string,
     translate: PropTypes.func,
     validation: PropTypes.func,
+    submitOnEnter: PropTypes.bool,
 };
 
 TabbedForm.defaultProps = {
     contentContainerStyle: { borderTop: 'solid 1px #e0e0e0' },
+    submitOnEnter: true,
 };
 
 const enhance = compose(
